@@ -61,12 +61,10 @@ use App\Models\Kunden;
 
 class UserRoleController extends Controller
 {
-
     public function __construct()
     {
         $this->middleware("auth");
     }
-    
 
     public function index()
     {
@@ -83,7 +81,6 @@ class UserRoleController extends Controller
         }
     }
 
-
     public function changeStatus(Request $request)
     {
         $user = User::find($request->user_id);
@@ -95,44 +92,40 @@ class UserRoleController extends Controller
         return response()->json(["success" => "Status change successfully."]);
     }
 
-
     public function adminDashboard()
     {
         return view("backend.admin.index");
     }
-
 
     public function adminProfile()
     {
         return view("backend.admin.profile");
     }
 
-
     public function sellerDashboard()
     {
         return view("backend.seller.index");
     }
-
 
     public function sellerProfile()
     {
         return view("backend.seller.profile");
     }
 
-
     public function freelancerDashboard()
     {
         return view("backend.freelancer.index");
     }
 
-
+    // Auth logout
     public function logout(Request $request)
     {
-        $request->session()->invalidate(); 
+        $request->session()->invalidate();
         return redirect("/")->with(Auth::logout());
-         return redirect('login')->with(Auth::logout());
+        return redirect("login")->with(Auth::logout());
     }
 }
+
 ```
 
 ## Model Code
@@ -146,42 +139,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Kunden;
 
-
 class Note extends Model
 {
     use HasFactory;
-    
-            protected $fillable = [
-            
-            'note_title',
-            'note_description',
-            'kunden_id',
-            'user_id',
 
-
+    protected $fillable = [
+        "note_title",
+        "note_description",
+        "kunden_id",
+        "user_id",
     ];
-            
-            
-            public function kunden() {
 
-            return $this->belongsTo(Kunden::class,'kunden_id','id');
+    public function kunden()
+    {
+        return $this->belongsTo(Kunden::class, "kunden_id", "id");
+    }
 
-        }
-        
-        
-         public function user() {
-
-            return $this->belongsTo(User::class);
-
-        }
-           
-            
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+
 ```
 
 ## Import Code
 
-### VendorsImport.php
+### NoteImport.php
 
 ```php
 namespace App\Imports;
