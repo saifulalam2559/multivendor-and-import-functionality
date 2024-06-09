@@ -53,8 +53,6 @@ Access the application at `http://localhost:8000`.
 ### UserRoleController.php
 
 ```php
-<?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -128,7 +126,6 @@ class UserRoleController extends Controller
     }
 
 
-    // Auth logout
     public function logout(Request $request)
     {
         $request->session()->invalidate(); 
@@ -140,19 +137,45 @@ class UserRoleController extends Controller
 
 ## Model Code
 
-### Vendor.php
+### Note.php
 
 ```php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Kunden;
 
-class Vendor extends Model
+
+class Note extends Model
 {
     use HasFactory;
+    
+            protected $fillable = [
+            
+            'note_title',
+            'note_description',
+            'kunden_id',
+            'user_id',
 
-    protected $fillable = ['name', 'email', 'address'];
+
+    ];
+            
+            
+            public function kunden() {
+
+            return $this->belongsTo(Kunden::class,'kunden_id','id');
+
+        }
+        
+        
+         public function user() {
+
+            return $this->belongsTo(User::class);
+
+        }
+           
+            
 }
 ```
 
@@ -163,20 +186,41 @@ class Vendor extends Model
 ```php
 namespace App\Imports;
 
-use App\Models\Vendor;
+use App\Models\Note;
+use App\Models\User;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
+use Throwable;
 
-class VendorsImport implements ToModel
+class NoteImport implements ToModel, WithHeadingRow, SkipsOnError
 {
     public function model(array $row)
     {
-        return new Vendor([
-            'name' => $row[0],
-            'email' => $row[1],
-            'address' => $row[2],
-        ]);
+        $username = trim($row["user_id"]);
+
+        $user = User::where("name", $username)->first();
+
+        if ($user) {
+            return new Note([
+                "user_id" => $user->id,
+                "kunden_id" => 19,
+                "note_title" => $row["note_title"],
+                "note_description" => $row["note_description"],
+            ]);
+        } else {
+            return null;
+        }
+    }
+
+    public function onError(Throwable $e)
+    {
+        // Handle the exception how you'd like.
     }
 }
+
+        
 ```
 
 ## Contributing
