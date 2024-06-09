@@ -50,7 +50,7 @@ Access the application at `http://localhost:8000`.
 
 ## Controller Code
 
-### ExampleController.php
+### UserRoleController.php
 
 ```php
 <?php
